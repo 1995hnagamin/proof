@@ -35,7 +35,7 @@ Module Beaf.
     | S a' => (to_nat a') + 1
     end.
 
-  Proposition example1 :
+  Example example1 :
     to_nat (p2 ^ p2 ^ p3) = 256.
   Proof.
     simpl. reflexivity.
