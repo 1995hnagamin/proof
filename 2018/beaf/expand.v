@@ -66,13 +66,9 @@ Module Beaf.
   Proof.
     intros a n b x x' Hx Hx'.
     generalize dependent x'.
-    induction Hx; intros x' Hx'.
-    - (* n = 1 *)
-      inversion Hx'; subst; reflexivity.
-    - (* b = 1 *)
-      inversion Hx'; subst; reflexivity.
+    induction Hx; intros x' Hx';
+      inversion Hx'; subst; try reflexivity.
     - (* ArrowInd *)
-      inversion Hx'; subst.
       apply IHHx2. replace y with y0. assumption.
       symmetry. apply IHHx1. assumption.
   Qed.
