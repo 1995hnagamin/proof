@@ -26,6 +26,21 @@ Module Beaf.
   Notation "a * b" := (mult a b) (left associativity, at level 40).
   Notation "a ^ b" := (power a b) (right associativity, at level 30).
 
+  Definition _2_ := S I.
+  Definition _3_ := S _2_.
+
+  Fixpoint to_nat (a:pint) : nat :=
+    match a with
+    | I => 1
+    | S a' => (to_nat a') + 1
+    end.
+
+  Example example1 :
+    to_nat (_2_ ^ _2_ ^ _3_) = 256.
+  Proof.
+    simpl. reflexivity.
+  Qed.
+
   Lemma plus_S_n : forall a b,
       (S a) + b = S (a + b).
   Proof.
@@ -90,21 +105,6 @@ Module Beaf.
       + simpl. rewrite IHb'. rewrite plus_comm. reflexivity.
     - intros b. rewrite mult_S_n. simpl. rewrite IHa'.
       rewrite plus_comm. reflexivity.
-  Qed.
-
-  Definition _2_ := S I.
-  Definition _3_ := S _2_.
-
-  Fixpoint to_nat (a:pint) : nat :=
-    match a with
-    | I => 1
-    | S a' => (to_nat a') + 1
-    end.
-
-  Example example1 :
-    to_nat (_2_ ^ _2_ ^ _3_) = 256.
-  Proof.
-    simpl. reflexivity.
   Qed.
 
   Fixpoint tetration (a:pint) (b:pint) : pint :=
