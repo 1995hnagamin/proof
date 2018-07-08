@@ -61,4 +61,20 @@ Module Beaf.
 
   Notation "[ a ^{ n } b == x ]" := (arrowR a n b x) (at level 100).
 
+  Lemma arrowR_eq_x : forall a n b x x',
+      [a ^{n} b == x] -> [a ^{n} b == x'] -> x = x'.
+  Proof.
+    intros a n b x x' Hx Hx'.
+    generalize dependent x'.
+    induction Hx; intros x' Hx'.
+    - (* n = 1 *)
+      inversion Hx'; subst; reflexivity.
+    - (* b = 1 *)
+      inversion Hx'; subst; reflexivity.
+    - (* ArrowInd *)
+      inversion Hx'; subst.
+      apply IHHx2. replace y with y0. assumption.
+      symmetry. apply IHHx1. assumption.
+  Qed.
+
 End Beaf.
