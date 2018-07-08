@@ -41,4 +41,12 @@ Module Beaf.
     simpl. reflexivity.
   Qed.
 
+  Fixpoint tetration (a:pint) (b:pint) : pint :=
+    match b with
+    | I => a
+    | S b' => power a (tetration a b')
+    end.
+
+  Notation "a ^^ b" := (tetration a b) (right associativity, at level 30).
+
 End Beaf.
