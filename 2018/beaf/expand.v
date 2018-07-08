@@ -77,4 +77,17 @@ Module Beaf.
       symmetry. apply IHHx1. assumption.
   Qed.
 
+  Lemma arrowR_exists_x : forall a n b,
+      exists x, [a ^{n} b == x].
+  Proof.
+    intros a n.
+    induction n as [| n' IHn']; intros b.
+    - exists (a ^ b). apply ArrowBaseN. reflexivity.
+    - induction b as [| b' IHb'].
+      + exists a. apply ArrowBaseRhs. reflexivity.
+      + destruct IHb' as [y IHb'].
+        specialize (IHn' y). destruct IHn' as [x IHn'].
+        exists x. apply ArrowInd with y; assumption.
+  Qed.
+
 End Beaf.
