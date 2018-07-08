@@ -152,4 +152,20 @@ Module Beaf.
         exists x. apply ArrowInd with y; assumption.
   Qed.
 
+  Example tetration_arrowR2_equiv : forall a b,
+      [a ^{_2_} b == a ^^ b].
+  Proof.
+    intros a b. induction b as [|b' IHb'].
+    - (* b = 1 *)
+      simpl. apply ArrowBaseRhs. reflexivity.
+    - (* b > 1 *)
+      inversion IHb'; subst.
+      + simpl. eapply ArrowInd.
+        apply ArrowBaseRhs. reflexivity.
+        apply ArrowBaseN. reflexivity.
+      + eapply ArrowInd.
+        apply IHb'.
+        apply ArrowBaseN. reflexivity.
+  Qed.
+
 End Beaf.
