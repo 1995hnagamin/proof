@@ -35,10 +35,10 @@ Module Beaf.
     | S a' => (to_nat a') + 1
     end.
 
-  Example example1 :
+  Example power_example1 :
     to_nat (_2_ ^ _2_ ^ _3_) = 256.
   Proof.
-    simpl. reflexivity.
+    reflexivity.
   Qed.
 
   Lemma plus_S_n : forall a b,
@@ -127,7 +127,7 @@ Module Beaf.
 
   Notation "[ a ^{ n } b == x ]" := (arrowR a n b x) (at level 100).
 
-  Lemma arrowR_eq_x : forall a n b x x',
+  Proposition arrowR_eq_x : forall a n b x x',
       [a ^{n} b == x] -> [a ^{n} b == x'] -> x = x'.
   Proof.
     intros a n b x x' Hx Hx'.
@@ -139,7 +139,7 @@ Module Beaf.
       symmetry. apply IHHx1. assumption.
   Qed.
 
-  Lemma arrowR_exists_x : forall a n b,
+  Proposition arrowR_exists_x : forall a n b,
       exists x, [a ^{n} b == x].
   Proof.
     intros a n.
