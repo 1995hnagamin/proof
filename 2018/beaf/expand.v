@@ -49,4 +49,16 @@ Module Beaf.
 
   Notation "a ^^ b" := (tetration a b) (right associativity, at level 30).
 
+  Inductive arrowR : pint -> pint -> pint -> pint -> Prop :=
+  | ArrowBaseN : forall a b x,
+      x = a ^ b -> arrowR a I b x
+  | ArrowBaseRhs : forall a n x,
+      a = x -> arrowR a n I x
+  | ArrowInd : forall a b n x y,
+      arrowR a (S n) b y ->
+      arrowR a n y x ->
+      arrowR a (S n) (S b) x.
+
+  Notation "[ a ^{ n } b == x ]" := (arrowR a n b x) (at level 100).
+
 End Beaf.
