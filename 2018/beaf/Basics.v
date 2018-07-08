@@ -26,6 +26,72 @@ Module Beaf.
   Notation "a * b" := (mult a b) (left associativity, at level 40).
   Notation "a ^ b" := (power a b) (right associativity, at level 30).
 
+  Lemma plus_S_n : forall a b,
+      (S a) + b = S (a + b).
+  Proof.
+    intros a b. generalize dependent a.
+    induction b as [| b' IHb']; intros a.
+    - reflexivity.
+    - simpl. rewrite IHb'. reflexivity.
+  Qed.
+
+  Lemma plus_assoc : forall a b c,
+      (a + b) + c = a + (b + c).
+  Proof.
+    intros a b c. induction c as [|c' IHc'].
+    - reflexivity.
+    - simpl. rewrite IHc'. reflexivity.
+  Qed.
+
+  Lemma plus_comm : forall a b,
+      a + b = b + a.
+  Proof.
+    intros a. induction a as [|a' IHa']; intros b.
+    - induction b as [|b' IHb'].
+      + reflexivity.
+      + simpl. rewrite IHb'. reflexivity.
+    - simpl. rewrite <- IHa'. rewrite plus_S_n. reflexivity.
+  Qed.
+
+  Lemma pint_distributive : forall a b c,
+      a * (b + c) = a * b + a * c.
+  Proof.
+    intros a b c. induction c as [| c' IHc'].
+    - simpl. rewrite plus_comm. reflexivity.
+    - simpl. rewrite IHc'.
+      replace (a + (a * b + a * c')) with ((a + a * b) + a * c').
+      replace (a + a * b) with (a * b + a).
+      apply plus_assoc. apply plus_comm. apply plus_assoc.
+  Qed.
+
+  Lemma mult_assoc : forall a b c,
+      (a * b) * c = a * (b * c).
+  Proof.
+    intros a b c. induction c as [|c' IHc'].
+    - reflexivity.
+    - simpl. rewrite pint_distributive. rewrite <- IHc'. reflexivity.
+  Qed.
+
+  Lemma mult_S_n : forall a b,
+      (S a) * b = a * b + b.
+  Proof.
+    intros a b. induction b as [| b' IHb'].
+    - reflexivity.
+    - simpl. rewrite IHb'. rewrite plus_S_n.
+      rewrite plus_assoc. reflexivity.
+  Qed.
+
+  Lemma mult_comm : forall a b,
+      a * b = b * a.
+  Proof.
+    intros a. induction a as [| a' IHa'].
+    - intros b. induction b as [| b' IHb'].
+      + reflexivity.
+      + simpl. rewrite IHb'. rewrite plus_comm. reflexivity.
+    - intros b. rewrite mult_S_n. simpl. rewrite IHa'.
+      rewrite plus_comm. reflexivity.
+  Qed.
+
   Definition p2 := S I.
   Definition p3 := S p2.
 
