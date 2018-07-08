@@ -92,8 +92,8 @@ Module Beaf.
       rewrite plus_comm. reflexivity.
   Qed.
 
-  Definition p2 := S I.
-  Definition p3 := S p2.
+  Definition _2_ := S I.
+  Definition _3_ := S _2_.
 
   Fixpoint to_nat (a:pint) : nat :=
     match a with
@@ -102,7 +102,7 @@ Module Beaf.
     end.
 
   Example example1 :
-    to_nat (p2 ^ p2 ^ p3) = 256.
+    to_nat (_2_ ^ _2_ ^ _3_) = 256.
   Proof.
     simpl. reflexivity.
   Qed.
