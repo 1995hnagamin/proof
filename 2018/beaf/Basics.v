@@ -41,6 +41,11 @@ Module Beaf.
     reflexivity.
   Qed.
 
+  Definition _10_ := S (_3_ * _3_).
+  Definition _100_ := _10_ * _10_.
+  Definition googol := _10_ ^ _100_.
+  Definition googolplex := _10_ ^ googol.
+
   Lemma plus_S_n : forall a b,
       (S a) + b = S (a + b).
   Proof.
