@@ -1,3 +1,5 @@
+Require Import Omega.
+
 Module Beaf.
 
   Notation "a ^ b" := (Nat.pow a b) (right associativity, at level 30).
@@ -23,14 +25,19 @@ Module Beaf.
   | ArrowBaseN : forall a b,
       arrowR a 1 b (a ^ b)
   | ArrowBaseRhs : forall a n,
-      arrowR a n 1 a
+      arrowR a (S n) 0 1
   | ArrowInd : forall a b n x y,
-      n > 1 ->
       arrowR a (S n) b y ->
       arrowR a n y x ->
       arrowR a (S n) (S b) x.
 
   Notation "[ a ^{ n } b == x ]" := (arrowR a n b x) (at level 100).
+
+  Lemma arrowR_0 : forall a b x,
+      ~ [a ^{0} b == x].
+  Proof.
+    intros a b x E. inversion E.
+  Qed.
 
   Proposition arrowR_eq_x : forall a n b x x',
       [a ^{n} b == x] -> [a ^{n} b == x'] -> x = x'.
