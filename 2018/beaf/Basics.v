@@ -1,131 +1,31 @@
 Module Beaf.
 
-  Inductive pint : Type :=
-  | I : pint
-  | S : pint -> pint.
-
-  Fixpoint plus (a:pint) (b:pint) : pint :=
-    match b with
-    | I => S a
-    | S b' => S (plus a b')
-    end.
-
-  Fixpoint mult (a:pint) (b:pint) : pint :=
-    match b with
-    | I => a
-    | S b' => plus a (mult a b')
-    end.
-
-  Fixpoint power (a:pint) (b:pint) : pint :=
-    match b with
-    | I => a
-    | S b' => mult a (power a b')
-    end.
-
-  Notation "a + b" := (plus a b) (left associativity, at level 50).
-  Notation "a * b" := (mult a b) (left associativity, at level 40).
-  Notation "a ^ b" := (power a b) (right associativity, at level 30).
-
-  Definition _2_ := S I.
-  Definition _3_ := S _2_.
-
-  Fixpoint to_nat (a:pint) : nat :=
-    match a with
-    | I => 1
-    | S a' => (to_nat a') + 1
-    end.
+  Notation "a ^ b" := (Nat.pow a b) (right associativity, at level 30).
 
   Example power_example1 :
-    to_nat (_2_ ^ _2_ ^ _3_) = 256.
+    2 ^ 2 ^ 3 = 256.
   Proof.
     reflexivity.
   Qed.
 
-  Definition _10_ := S (_3_ * _3_).
-  Definition _100_ := _10_ * _10_.
-  Definition googol := _10_ ^ _100_.
-  Definition googolplex := _10_ ^ googol.
+  Definition googol := 10 ^ 100.
+  Definition googolplex := 10 ^ googol.
 
-  Lemma plus_S_n : forall a b,
-      (S a) + b = S (a + b).
-  Proof.
-    intros a b. generalize dependent a.
-    induction b as [| b' IHb']; intros a.
-    - reflexivity.
-    - simpl. rewrite IHb'. reflexivity.
-  Qed.
-
-  Lemma plus_assoc : forall a b c,
-      (a + b) + c = a + (b + c).
-  Proof.
-    intros a b c. induction c as [|c' IHc'].
-    - reflexivity.
-    - simpl. rewrite IHc'. reflexivity.
-  Qed.
-
-  Lemma plus_comm : forall a b,
-      a + b = b + a.
-  Proof.
-    intros a. induction a as [|a' IHa']; intros b.
-    - induction b as [|b' IHb'].
-      + reflexivity.
-      + simpl. rewrite IHb'. reflexivity.
-    - simpl. rewrite <- IHa'. rewrite plus_S_n. reflexivity.
-  Qed.
-
-  Lemma pint_distributive : forall a b c,
-      a * (b + c) = a * b + a * c.
-  Proof.
-    intros a b c. induction c as [| c' IHc'].
-    - simpl. rewrite plus_comm. reflexivity.
-    - simpl. rewrite IHc'.
-      replace (a + (a * b + a * c')) with ((a + a * b) + a * c').
-      replace (a + a * b) with (a * b + a).
-      apply plus_assoc. apply plus_comm. apply plus_assoc.
-  Qed.
-
-  Lemma mult_assoc : forall a b c,
-      (a * b) * c = a * (b * c).
-  Proof.
-    intros a b c. induction c as [|c' IHc'].
-    - reflexivity.
-    - simpl. rewrite pint_distributive. rewrite <- IHc'. reflexivity.
-  Qed.
-
-  Lemma mult_S_n : forall a b,
-      (S a) * b = a * b + b.
-  Proof.
-    intros a b. induction b as [| b' IHb'].
-    - reflexivity.
-    - simpl. rewrite IHb'. rewrite plus_S_n.
-      rewrite plus_assoc. reflexivity.
-  Qed.
-
-  Lemma mult_comm : forall a b,
-      a * b = b * a.
-  Proof.
-    intros a. induction a as [| a' IHa'].
-    - intros b. induction b as [| b' IHb'].
-      + reflexivity.
-      + simpl. rewrite IHb'. rewrite plus_comm. reflexivity.
-    - intros b. rewrite mult_S_n. simpl. rewrite IHa'.
-      rewrite plus_comm. reflexivity.
-  Qed.
-
-  Fixpoint tetration (a:pint) (b:pint) : pint :=
+  Fixpoint tetration (a:nat) (b:nat) : nat :=
     match b with
-    | I => a
-    | S b' => power a (tetration a b')
+    | O => 1
+    | S b' => a ^ (tetration a b')
     end.
 
   Notation "a ^^ b" := (tetration a b) (right associativity, at level 30).
 
-  Inductive arrowR : pint -> pint -> pint -> pint -> Prop :=
-  | ArrowBaseN : forall a b x,
-      x = a ^ b -> arrowR a I b x
-  | ArrowBaseRhs : forall a n x,
-      a = x -> arrowR a n I x
+  Inductive arrowR : nat -> nat -> nat -> nat -> Prop :=
+  | ArrowBaseN : forall a b,
+      arrowR a 1 b (a ^ b)
+  | ArrowBaseRhs : forall a n,
+      arrowR a n 1 a
   | ArrowInd : forall a b n x y,
+      n > 1 ->
       arrowR a (S n) b y ->
       arrowR a n y x ->
       arrowR a (S n) (S b) x.
