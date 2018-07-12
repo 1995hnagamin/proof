@@ -64,4 +64,10 @@ Module QuickSort.
     reflexivity.
   Qed.
 
+  Inductive sorted : list nat -> Prop :=
+  | SortedEmpty : sorted [ ]
+  | SortedSingleton : forall n, sorted [n]
+  | SortedInd : forall n m l,
+      n <= m -> sorted (m :: l) -> sorted (n :: m :: l).
+
 End QuickSort.
