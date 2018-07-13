@@ -37,6 +37,49 @@ Module HeapSort.
       height t1 = height t2 ->
       perfect (Node n t1 t2).
 
+  Lemma sum_pos : forall a b,
+      a > 0 -> a + b > 0.
+  Proof.
+    intros a b. omega.
+  Qed.
+
+  Lemma product_pos : forall a b,
+      a > 0 -> b > 0 -> a * b > 0.
+  Proof.
+    intros a b Ha. induction b as [| b' IHb' ].
+    - intros Hb. inversion Hb.
+    - intros Hb. replace (a * S b') with (a + a * b').
+      apply sum_pos. assumption.
+      (* a * S b' = a + a * b' *) rewrite <- mult_n_Sm. omega.
+  Qed.
+
+  Lemma pow_pos : forall a n,
+      a > 0 -> a ^ n > 0.
+  Proof.
+    intros a n H. induction n as [| n' IHn' ].
+    - simpl. omega.
+    - simpl. remember (a ^ n') as k. apply product_pos.
+      assumption. assumption.
+  Qed.
+
+  Proposition size_of_perfect_bintree : forall t,
+      perfect t -> size t = (Nat.pow 2 (height t)) - 1.
+  Proof.
+    intros t E. induction E.
+    - (* PerfectNil *)
+      reflexivity.
+    - (* PerfectInd *)
+      simpl. replace (height t2) with (height t1).
+      rewrite max_l. replace (size t2) with (size t1).
+      rewrite IHE1.
+      assert (Lem: 2 ^ height t1 > 0).
+      { apply pow_pos. omega. }
+      remember (2 ^ height t1) as k. omega.
+      (* size t1 = size t2 *)
+      rewrite IHE1. rewrite IHE2. rewrite H. reflexivity.
+      (* height t1 <= height t2 *) omega.
+  Qed.
+
 End HeapSort.
 
 Module QuickSort.
