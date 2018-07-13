@@ -23,6 +23,12 @@ Module HeapSort.
     | Node _ c1 c2 => S (Nat.max (height c1) (height c2))
     end.
 
+  Fixpoint size (t:bintree) : nat :=
+    match t with
+    | Nil => 0
+    | Node _ c1 c2 => (size c1) + (size c2) + 1
+    end.
+
   Inductive perfect : bintree -> Prop :=
   | PerfectNil : perfect Nil
   | PerfectInd : forall n t1 t2,
