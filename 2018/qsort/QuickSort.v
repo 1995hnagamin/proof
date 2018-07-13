@@ -11,6 +11,28 @@ Inductive sorted : list nat -> Prop :=
 | SortedInd : forall n m l,
     n <= m -> sorted (m :: l) -> sorted (n :: m :: l).
 
+Module HeapSort.
+
+  Inductive bintree : Type :=
+  | Nil : bintree
+  | Node : nat -> bintree -> bintree -> bintree.
+
+  Fixpoint height (t:bintree) : nat :=
+    match t with
+    | Nil => 0
+    | Node _ c1 c2 => S (Nat.max (height c1) (height c2))
+    end.
+
+  Inductive complete : bintree -> Prop :=
+  | CompleteNil : complete Nil
+  | CompleteInd : forall n t1 t2,
+      complete t1 ->
+      complete t2 ->
+      height t1 = height t2 ->
+      complete (Node n t1 t2).
+
+End HeapSort.
+
 Module QuickSort.
 
   Check filter.
