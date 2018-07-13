@@ -23,13 +23,13 @@ Module HeapSort.
     | Node _ c1 c2 => S (Nat.max (height c1) (height c2))
     end.
 
-  Inductive complete : bintree -> Prop :=
-  | CompleteNil : complete Nil
-  | CompleteInd : forall n t1 t2,
-      complete t1 ->
-      complete t2 ->
+  Inductive perfect : bintree -> Prop :=
+  | PerfectNil : perfect Nil
+  | PerfectInd : forall n t1 t2,
+      perfect t1 ->
+      perfect t2 ->
       height t1 = height t2 ->
-      complete (Node n t1 t2).
+      perfect (Node n t1 t2).
 
 End HeapSort.
 
