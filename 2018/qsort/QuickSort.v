@@ -3,9 +3,15 @@ Require Import Coq.Program.Tactics.
 Require Import Coq.Program.Wf.
 Require Import Omega.
 
-Module QuickSort.
+Import ListNotations.
 
-  Import ListNotations.
+Inductive sorted : list nat -> Prop :=
+| SortedEmpty : sorted [ ]
+| SortedSingleton : forall n, sorted [n]
+| SortedInd : forall n m l,
+    n <= m -> sorted (m :: l) -> sorted (n :: m :: l).
+
+Module QuickSort.
 
   Check filter.
 
@@ -63,11 +69,5 @@ Module QuickSort.
   Proof.
     reflexivity.
   Qed.
-
-  Inductive sorted : list nat -> Prop :=
-  | SortedEmpty : sorted [ ]
-  | SortedSingleton : forall n, sorted [n]
-  | SortedInd : forall n m l,
-      n <= m -> sorted (m :: l) -> sorted (n :: m :: l).
 
 End QuickSort.
