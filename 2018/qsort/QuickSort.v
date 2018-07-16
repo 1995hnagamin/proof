@@ -88,6 +88,13 @@ Module HeapSort.
       (* height t1 <= height t2 *) omega.
   Qed.
 
+  Fixpoint perfb (t:bintree) : bool :=
+    match t with
+    | Leaf _ => true
+    | Inner _ t1 t2 =>
+      (height t1 =? height t2) && perfb t1 && perfb t2
+    end.
+
   Inductive complete : bintree -> Prop :=
   | CompleteSingleton : forall n,
       complete (Leaf n)
