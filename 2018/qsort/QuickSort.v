@@ -102,6 +102,16 @@ Module HeapSort.
       complete t2 ->
       complete (Inner n t1 t2).
 
+  Proposition perfect_imp_complete : forall t,
+      perfect t -> complete t.
+  Proof.
+    intros t E. induction E.
+    - (* PerfectSingleton *)
+      apply CompleteSingleton.
+    - (* PerfectInd *)
+      apply CompleteB; assumption.
+  Qed.
+
 End HeapSort.
 
 Module QuickSort.
