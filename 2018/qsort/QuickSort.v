@@ -29,6 +29,12 @@ Module HeapSort.
     | Inner _ c1 c2 => (vertices c1) + (vertices c2) + 1
     end.
 
+  Definition root (t:bintree) : nat :=
+    match t with
+    | Leaf n => n
+    | Inner n _ _ => n
+    end.
+
   Inductive perfect : bintree -> Prop :=
   | PerfectSingleton : forall n,
       perfect (Leaf n)
