@@ -112,6 +112,16 @@ Module HeapSort.
       apply CompleteB; assumption.
   Qed.
 
+  Inductive sat_heap_prop : bintree -> Prop :=
+  | SatHPSingle : forall n,
+      sat_heap_prop (Leaf n)
+  | SatHPInd : forall n t1 t2,
+      sat_heap_prop t1 ->
+      sat_heap_prop t2 ->
+      root t1 <= n ->
+      root t2 <= n ->
+      sat_heap_prop (Inner n t1 t2).
+
 End HeapSort.
 
 Module QuickSort.
