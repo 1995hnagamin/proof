@@ -163,6 +163,11 @@ Module HeapSort.
       apply max_upper; assumption.
   Qed.
 
+  Definition heap (t:bintree) : Prop :=
+    complete t /\ sat_heap_prop t.
+  (** A binary tree is called binary heap if and only if it satisfies
+      the shape property (completeness) and the heap property. *)
+
 End HeapSort.
 
 Module QuickSort.
