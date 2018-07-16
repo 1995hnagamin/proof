@@ -15,24 +15,32 @@ Module HeapSort.
 
   Inductive bintree : Type :=
   | Leaf : nat -> bintree
-  | Inner : nat -> bintree -> bintree -> bintree.
+  | Left : nat -> bintree -> bintree
+  | Right : nat -> bintree -> bintree
+  | Fork : nat -> bintree -> bintree -> bintree.
 
   Fixpoint height (t:bintree) : nat :=
     match t with
     | Leaf _ => 0
-    | Inner _ c1 c2 => S (Nat.max (height c1) (height c2))
+    | Left _ c1 => S (height c1)
+    | Right _ c2 => S (height c2)
+    | Fork _ c1 c2 => S (Nat.max (height c1) (height c2))
     end.
 
   Fixpoint vertices (t:bintree) : nat :=
     match t with
     | Leaf _ => 1
-    | Inner _ c1 c2 => (vertices c1) + (vertices c2) + 1
+    | Left _ c1 => S (vertices c1)
+    | Right _ c2 => S (vertices c2)
+    | Fork _ c1 c2 => (vertices c1) + (vertices c2) + 1
     end.
 
   Definition root (t:bintree) : nat :=
     match t with
     | Leaf n => n
-    | Inner n _ _ => n
+    | Left n _ => n
+    | Right n _ => n
+    | Fork n _ _ => n
     end.
 
   Inductive perfect : bintree -> Prop :=
@@ -42,7 +50,7 @@ Module HeapSort.
       perfect t1 ->
       perfect t2 ->
       height t1 = height t2 ->
-      perfect (Inner n t1 t2).
+      perfect (Fork n t1 t2).
 
   Lemma sum_pos : forall a b,
       a > 0 -> a + b > 0.
@@ -91,7 +99,9 @@ Module HeapSort.
   Fixpoint perfb (t:bintree) : bool :=
     match t with
     | Leaf _ => true
-    | Inner _ t1 t2 =>
+    | Left _ _ => false
+    | Right _ _ => false
+    | Fork _ t1 t2 =>
       (height t1 =? height t2) && perfb t1 && perfb t2
     end.
 
@@ -108,8 +118,10 @@ Module HeapSort.
         replace (height t2 =? height t2) with true. reflexivity.
         (* goal: height t2 =? height t2 *) apply beq_nat_refl.
     - (* <- *)
-      induction t as [n | n t1 IHt1 t2 IHt2].
+      induction t as [n | n t1 | n t2 | n t1 IHt1 t2 IHt2].
       + intros. apply PerfectSingleton.
+      + (* contradiction *) intros contra. inversion contra.
+      + (* contradiciton *) intros contra. inversion contra.
       + intros H. simpl in H.
         apply andb_prop in H. destruct H as [H Ht2].
         apply andb_prop in H. destruct H as [Hheight Ht1].
@@ -122,16 +134,18 @@ Module HeapSort.
   Inductive complete : bintree -> Prop :=
   | CompleteSingleton : forall n,
       complete (Leaf n)
+  | CompleteLeft : forall n m,
+      complete (Left n (Leaf m))
   | CompleteA : forall n t1 t2,
       height t1 = height t2 + 1 ->
       complete t1 ->
       perfect t2 ->
-      complete (Inner n t1 t2)
+      complete (Fork n t1 t2)
   | CompleteB : forall n t1 t2,
       height t1 = height t2 ->
       perfect t1 ->
       complete t2 ->
-      complete (Inner n t1 t2).
+      complete (Fork n t1 t2).
 
   Proposition perfect_imp_complete : forall t,
       perfect t -> complete t.
@@ -146,17 +160,29 @@ Module HeapSort.
   Inductive sat_heap_prop : bintree -> Prop :=
   | SatHPSingle : forall n,
       sat_heap_prop (Leaf n)
-  | SatHPInd : forall n t1 t2,
+  | SatHPLeft : forall n t1,
+      sat_heap_prop t1 ->
+      root t1 <= n ->
+      sat_heap_prop (Left n t1)
+  | SatHPRight : forall n t2,
+      sat_heap_prop t2 ->
+      root t2 <= n ->
+      sat_heap_prop (Right n t2)
+  | SatHPFork : forall n t1 t2,
       sat_heap_prop t1 ->
       sat_heap_prop t2 ->
       root t1 <= n ->
       root t2 <= n ->
-      sat_heap_prop (Inner n t1 t2).
+      sat_heap_prop (Fork n t1 t2).
 
   Fixpoint max_vertex (t:bintree) : nat :=
     match t with
     | Leaf n => n
-    | Inner n t1 t2 =>
+    | Left n t1 =>
+      Nat.max n (max_vertex t1)
+    | Right n t2 =>
+      Nat.max n (max_vertex t2)
+    | Fork n t1 t2 =>
       Nat.max n (Nat.max (max_vertex t1) (max_vertex t2))
     end.
 
@@ -189,6 +215,10 @@ Module HeapSort.
     intros t E. induction E.
     - (* SatHPSingle *)
       reflexivity.
+    - (* SatHPLeft *)
+      simpl. apply max_l. rewrite IHE. assumption.
+    - (* SatHPRight *)
+      simpl. apply max_l. rewrite IHE. assumption.
     - (* SatHPInd *)
       simpl. apply max_l. rewrite IHE1. rewrite IHE2.
       apply max_upper; assumption.
