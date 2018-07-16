@@ -122,6 +122,47 @@ Module HeapSort.
       root t2 <= n ->
       sat_heap_prop (Inner n t1 t2).
 
+  Fixpoint max_vertex (t:bintree) : nat :=
+    match t with
+    | Leaf n => n
+    | Inner n t1 t2 =>
+      Nat.max n (Nat.max (max_vertex t1) (max_vertex t2))
+    end.
+
+  Lemma max_upper : forall a b m,
+      a <= m -> b <= m -> Nat.max a b <= m.
+  Proof.
+    intros a b m Ea. generalize dependent b.
+    induction Ea.
+    - (* a = m *)
+      intros b Eb. induction Eb.
+      + (* b = a *)
+        replace (Nat.max b b) with b. apply le_n.
+        (* goal: b = Nat.max b b *)
+        symmetry. apply max_l. apply le_n.
+      + (* b <= m - 1 *)
+        replace (Nat.max (S m) b) with (S m). apply le_n.
+        (* goal: S m = Nat.max (S m) b *)
+        symmetry. apply max_l. apply le_S. apply Eb.
+    - (* a <= m - 1 *)
+      intros b Eb. inversion Eb.
+      + replace (Nat.max a (S m)) with (S m). apply le_n.
+        (* goal : S m = Nat.max a (S m) *)
+        symmetry. apply max_r. apply le_S. apply Ea.
+      + subst. apply le_S. apply IHEa. assumption.
+  Qed.
+
+  Proposition heap_prop_max : forall t,
+      sat_heap_prop t -> max_vertex t = root t.
+  Proof.
+    intros t E. induction E.
+    - (* SatHPSingle *)
+      reflexivity.
+    - (* SatHPInd *)
+      simpl. apply max_l. rewrite IHE1. rewrite IHE2.
+      apply max_upper; assumption.
+  Qed.
+
 End HeapSort.
 
 Module QuickSort.
