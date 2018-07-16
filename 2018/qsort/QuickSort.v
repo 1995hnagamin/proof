@@ -95,6 +95,30 @@ Module HeapSort.
       (height t1 =? height t2) && perfb t1 && perfb t2
     end.
 
+  Proposition perfb_true_iff : forall t,
+      perfect t <-> perfb t = true.
+  Proof.
+    intros t. split.
+    - (* -> *)
+      intros E. induction E.
+      + (* t = Leaf n *)
+        reflexivity.
+      + (* t = Inner n t1 t2 *)
+        simpl. rewrite H. rewrite IHE1. rewrite IHE2.
+        replace (height t2 =? height t2) with true. reflexivity.
+        (* goal: height t2 =? height t2 *) apply beq_nat_refl.
+    - (* <- *)
+      induction t as [n | n t1 IHt1 t2 IHt2].
+      + intros. apply PerfectSingleton.
+      + intros H. simpl in H.
+        apply andb_prop in H. destruct H as [H Ht2].
+        apply andb_prop in H. destruct H as [Hheight Ht1].
+        apply PerfectInd.
+        * apply IHt1. apply Ht1.
+        * apply IHt2. apply Ht2.
+        * apply beq_nat_true_iff. apply Hheight.
+  Qed.
+
   Inductive complete : bintree -> Prop :=
   | CompleteSingleton : forall n,
       complete (Leaf n)
