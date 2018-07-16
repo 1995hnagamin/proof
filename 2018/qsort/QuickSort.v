@@ -14,28 +14,29 @@ Inductive sorted : list nat -> Prop :=
 Module HeapSort.
 
   Inductive bintree : Type :=
-  | Nil : bintree
-  | Node : nat -> bintree -> bintree -> bintree.
+  | Leaf : nat -> bintree
+  | Inner : nat -> bintree -> bintree -> bintree.
 
   Fixpoint height (t:bintree) : nat :=
     match t with
-    | Nil => 0
-    | Node _ c1 c2 => S (Nat.max (height c1) (height c2))
+    | Leaf _ => 0
+    | Inner _ c1 c2 => S (Nat.max (height c1) (height c2))
     end.
 
-  Fixpoint size (t:bintree) : nat :=
+  Fixpoint vertices (t:bintree) : nat :=
     match t with
-    | Nil => 0
-    | Node _ c1 c2 => (size c1) + (size c2) + 1
+    | Leaf _ => 1
+    | Inner _ c1 c2 => (vertices c1) + (vertices c2) + 1
     end.
 
   Inductive perfect : bintree -> Prop :=
-  | PerfectNil : perfect Nil
+  | PerfectSingleton : forall n,
+      perfect (Leaf n)
   | PerfectInd : forall n t1 t2,
       perfect t1 ->
       perfect t2 ->
       height t1 = height t2 ->
-      perfect (Node n t1 t2).
+      perfect (Inner n t1 t2).
 
   Lemma sum_pos : forall a b,
       a > 0 -> a + b > 0.
@@ -62,20 +63,21 @@ Module HeapSort.
       assumption. assumption.
   Qed.
 
-  Proposition size_of_perfect_bintree : forall t,
-      perfect t -> size t = (Nat.pow 2 (height t)) - 1.
+  Proposition vertices_of_perfect_bintree : forall t,
+      perfect t ->
+      vertices t = (Nat.pow 2 (height t + 1)) - 1.
   Proof.
     intros t E. induction E.
-    - (* PerfectNil *)
+    - (* PerfectSingleton *)
       reflexivity.
     - (* PerfectInd *)
       simpl. replace (height t2) with (height t1).
-      rewrite max_l. replace (size t2) with (size t1).
+      rewrite max_l. replace (vertices t2) with (vertices t1).
       rewrite IHE1.
-      assert (Lem: 2 ^ height t1 > 0).
+      assert (Lem: 2 ^ (height t1 + 1) > 0).
       { apply pow_pos. omega. }
-      remember (2 ^ height t1) as k. omega.
-      (* size t1 = size t2 *)
+      remember (2 ^ (height t1 + 1)) as k. omega.
+      (* vertices t1 = vertices t2 *)
       rewrite IHE1. rewrite IHE2. rewrite H. reflexivity.
       (* height t1 <= height t2 *) omega.
   Qed.
