@@ -88,6 +88,20 @@ Module HeapSort.
       (* height t1 <= height t2 *) omega.
   Qed.
 
+  Inductive complete : bintree -> Prop :=
+  | CompleteSingleton : forall n,
+      complete (Leaf n)
+  | CompleteA : forall n t1 t2,
+      height t1 = height t2 + 1 ->
+      complete t1 ->
+      perfect t2 ->
+      complete (Inner n t1 t2)
+  | CompleteB : forall n t1 t2,
+      height t1 = height t2 ->
+      perfect t1 ->
+      complete t2 ->
+      complete (Inner n t1 t2).
+
 End HeapSort.
 
 Module QuickSort.
