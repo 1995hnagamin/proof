@@ -5,7 +5,7 @@ Proposition nndn : forall P,
 Proof.
   intros P NDN.
   apply NDN. intros DNP.
-  exfalso. apply DNP. intros HP. apply NDN. intros DNP2. apply HP.
+  exfalso. apply DNP. intros HP. apply NDN. intros DNP2. exact HP.
 Qed.
 
 Proposition tn : forall P,
