@@ -7,3 +7,9 @@ Proof.
   apply NDN. intros DNP.
   exfalso. apply DNP. intros HP. apply NDN. intros DNP2. apply HP.
 Qed.
+
+Proposition tn : forall P,
+    ~~~P -> ~P.
+Proof.
+  intros P TN HP. apply TN. intros NP. apply NP. exact HP.
+Qed.
