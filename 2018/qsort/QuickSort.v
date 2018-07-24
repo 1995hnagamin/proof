@@ -290,4 +290,34 @@ Module QuickSort.
     reflexivity.
   Qed.
 
+  Lemma qsort_length : forall l,
+      length (qsort l) = length l.
+  Proof.
+  Abort.
+
+  Lemma qsort_two_head : forall l'' l n m,
+      qsort l = n :: m :: l'' -> n <= m.
+  Proof.
+    intros l''. induction l'' as [| k l'3 IHl'3]; intros l n m.
+    - intros Hqsort.
+      + unfold qsort in Hqsort. simpl in Hqsort.
+  Abort.
+
+  Theorem qsort_is_sort : forall l,
+      sorted (qsort l).
+  Proof.
+    intros l1. remember (qsort l1) as l.
+    generalize dependent l1.
+    induction l as [| n l' IHl'].
+    (* l = [] *) intros. apply SortedEmpty.
+    induction l' as [| m l'' IHl''].
+    - (* l = [n] *)
+      intros. apply SortedSingleton.
+    - (* l = n :: m :: l'' *)
+      intros l1 Hl1.
+      apply SortedInd.
+      unfold qsort in Hl1.
+      simpl in Hl1.
+  Abort.
+
 End QuickSort.
