@@ -1,4 +1,4 @@
-(** Quant.v *)
+(** FOL.v *)
 
 Proposition ap2nenp : forall (T: Type) (P: T -> Prop),
     (forall x, P x) -> ~(exists x, ~(P x)).
