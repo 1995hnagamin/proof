@@ -1,7 +1,10 @@
 (** Prop.v *)
 
+Definition dbl_neg (P:Prop) :=
+  ~~P -> P.
+
 Proposition nndn : forall P,
-    ~~(~~P -> P).
+    ~~(dbl_neg P).
 Proof.
   intros P NDN.
   apply NDN. intros DNP.
@@ -9,20 +12,23 @@ Proof.
 Qed.
 
 Proposition nnadn :
-  ~~(forall P, ~~P -> P).
+  ~~(forall P, dbl_neg P).
 Proof.
   intros NADN. apply NADN. intros P.
   intros NNP.
 Abort.
 
 Proposition tn : forall P,
-    ~~~P -> ~P.
+    dbl_neg (~P).
 Proof.
   intros P TN HP. apply TN. intros NP. apply NP. exact HP.
 Qed.
 
+Definition excl_mid (P:Prop) :=
+  P \/ ~P.
+
 Proposition nnem : forall P,
-    ~~(P \/ ~P).
+    ~~(excl_mid P).
 Proof.
   intros P NEM. apply NEM.
   right. intros HP. apply NEM.
@@ -30,7 +36,7 @@ Proof.
 Qed.
 
 Proposition nnaem :
-  ~~(forall P, P \/ ~P).
+  ~~(forall P, excl_mid P).
 Proof.
   intros NAEM. apply NAEM.
   intros P. right. intros HP.
@@ -38,7 +44,7 @@ Proof.
 Abort.
 
 Proposition em2dn : forall P,
-    (P \/ ~P) -> (~~P -> P).
+    (excl_mid P) -> (dbl_neg P).
 Proof.
   intros P EMP NNP. destruct EMP as [HP | NP].
   - apply HP.
@@ -46,13 +52,13 @@ Proof.
 Qed.
 
 Proposition dn2em : forall P,
-    (~~P -> P) -> (P \/ ~P).
+    (dbl_neg P) -> (excl_mid P).
 Proof.
   intros P DN.
 Abort.
 
 Proposition adn_eq_aem :
-    (forall P, ~~P -> P) <-> (forall P, P \/ ~P).
+    (forall P, dbl_neg P) <-> (forall P, excl_mid P).
 Proof.
   split.
   - (* -> *)
@@ -63,17 +69,20 @@ Proof.
     intros AEM P. apply em2dn. apply AEM.
 Qed.
 
+Definition pierce (P Q:Prop) :=
+  ((P -> Q) -> P) -> P.
+
 Proposition nn_pierce : forall P Q : Prop,
-    ~~(((P -> Q) -> P) -> P).
+    ~~(pierce P Q).
 Proof.
   intros P Q NPQPP. apply NPQPP.
   intros PQP. apply PQP.
   intros HP. exfalso.
-  apply NPQPP. intros. exact HP.
+  apply NPQPP. intros ?. exact HP.
 Qed.
 
 Proposition dn_eq_pierce : forall P Q,
-    (~~P -> P) <-> (((P -> Q) -> P) -> P).
+    (dbl_neg P) <-> (pierce P Q).
 Proof.
   split.
   - (* -> *)
@@ -85,7 +94,7 @@ Proof.
     intros PQ. Abort.
 
 Proposition adn_eq_apierce :
-  (forall P, ~~P -> P) <-> (forall P Q:Prop, ((P -> Q) -> P) -> P).
+  (forall P, dbl_neg P) <-> (forall P Q, pierce P Q).
 Proof.
   split.
   - (* -> *)
@@ -98,7 +107,7 @@ Proof.
 Qed.
 
 Corollary aem_eq_apierce :
-  (forall P, P \/ ~P) <-> (forall P Q:Prop, ((P -> Q) -> P) -> P).
+  (forall P, excl_mid P) <-> (forall P Q, pierce P Q).
 Proof.
   eapply iff_trans.
   - apply iff_sym. apply adn_eq_aem.
