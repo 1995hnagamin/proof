@@ -5,7 +5,7 @@
 Definition dbl_neg (P:Prop) :=
   ~~P -> P.
 
-Proposition nndn : forall P,
+Proposition dbl_neg_not_false : forall P,
     ~~(dbl_neg P).
 Proof.
   intros P NDN.
@@ -13,14 +13,14 @@ Proof.
   exfalso. apply DNP. intros HP. apply NDN. intros DNP2. exact HP.
 Qed.
 
-Proposition nnadn :
+Proposition dbl_neg_axiom_not_false :
   ~~(forall P, dbl_neg P).
 Proof.
   intros NADN. apply NADN. intros P.
   intros NNP.
 Abort.
 
-Proposition tn : forall P,
+Proposition tri_neg : forall P,
     dbl_neg (~P).
 Proof.
   intros P TN HP. apply TN. intros NP. apply NP. exact HP.
@@ -32,7 +32,7 @@ Qed.
 Definition excl_mid (P:Prop) :=
   P \/ ~P.
 
-Proposition nnem : forall P,
+Proposition excl_mid_not_false : forall P,
     ~~(excl_mid P).
 Proof.
   intros P NEM. apply NEM.
@@ -40,7 +40,7 @@ Proof.
   left. exact HP.
 Qed.
 
-Proposition nnaem :
+Proposition excl_mid_axiom_not_false :
   ~~(forall P, excl_mid P).
 Proof.
   intros NAEM. apply NAEM.
@@ -54,7 +54,7 @@ Abort.
 Definition pierce (P Q:Prop) :=
   ((P -> Q) -> P) -> P.
 
-Proposition nn_pierce : forall P Q : Prop,
+Proposition pierce_not_false : forall P Q : Prop,
     ~~(pierce P Q).
 Proof.
   intros P Q NPQPP. apply NPQPP.
@@ -80,7 +80,7 @@ Qed.
 
 (* ================================================= *)
 
-Proposition adn_eq_aem :
+Proposition dbl_neg_axiom_iff_excl_mid_axiom :
     (forall P, dbl_neg P) <-> (forall P, excl_mid P).
 Proof.
   split.
@@ -94,7 +94,7 @@ Proof.
     + (* ~P *) exfalso. apply NNP. assumption.
 Qed.
 
-Proposition adn_eq_apierce :
+Proposition dbl_neg_axiom_iff_pierce_axiom :
   (forall P, dbl_neg P) <-> (forall P Q, pierce P Q).
 Proof.
   split.
@@ -107,12 +107,12 @@ Proof.
     exfalso. apply NNP. exact NP.
 Qed.
 
-Corollary aem_eq_apierce :
+Corollary excl_mid_axiom_iff_pierce_axiom :
   (forall P, excl_mid P) <-> (forall P Q, pierce P Q).
 Proof.
   eapply iff_trans.
-  - apply iff_sym. apply adn_eq_aem.
-  - apply adn_eq_apierce.
+  - apply iff_sym. apply dbl_neg_axiom_iff_excl_mid_axiom.
+  - apply dbl_neg_axiom_iff_pierce_axiom.
 Qed.
 
 Lemma de_morgan : forall P Q,
@@ -139,7 +139,7 @@ Proof.
     right. exact NP.
 Qed.
 
-Proposition em2dn : forall P,
+Proposition excl_mid_imp_dbl_neg : forall P,
     (excl_mid P) -> (dbl_neg P).
 Proof.
   intros P EMP NNP. destruct EMP as [HP | NP].
@@ -147,13 +147,13 @@ Proof.
   - exfalso. apply NNP. exact NP.
 Qed.
 
-Proposition dn2em : forall P,
+Proposition dbl_neg_imp_excl_mid : forall P,
     (dbl_neg P) -> (excl_mid P).
 Proof.
   intros P DN.
 Abort.
 
-Proposition dn_eq_pierce : forall P Q,
+Proposition dbl_neg_iff_pierce : forall P Q,
     (dbl_neg P) <-> (pierce P Q).
 Proof.
   split.
