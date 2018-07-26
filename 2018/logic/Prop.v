@@ -62,3 +62,45 @@ Proof.
   - (* <- *)
     intros AEM P. apply em2dn. apply AEM.
 Qed.
+
+Proposition nn_pierce : forall P Q : Prop,
+    ~~(((P -> Q) -> P) -> P).
+Proof.
+  intros P Q NPQPP. apply NPQPP.
+  intros PQP. apply PQP.
+  intros HP. exfalso.
+  apply NPQPP. intros. exact HP.
+Qed.
+
+Proposition dn_eq_pierce : forall P Q,
+    (~~P -> P) <-> (((P -> Q) -> P) -> P).
+Proof.
+  split.
+  - (* -> *)
+    intros DN PQP. apply DN.
+    intros NP. apply NP. apply PQP.
+    intros HP. congruence.
+  - (* <- *)
+    intros PQPP NNP. apply PQPP.
+    intros PQ. Abort.
+
+Proposition adn_eq_apierce :
+  (forall P, ~~P -> P) <-> (forall P Q:Prop, ((P -> Q) -> P) -> P).
+Proof.
+  split.
+  - (* -> *)
+    intros ADN P Q PQP.
+    apply ADN. intros NP. apply NP. apply PQP. intros HP.
+    congruence.
+  - (* <- *)
+    intros APQPP P NNP. apply APQPP with False. intros NP.
+    exfalso. apply NNP. exact NP.
+Qed.
+
+Corollary aem_eq_apierce :
+  (forall P, P \/ ~P) <-> (forall P Q:Prop, ((P -> Q) -> P) -> P).
+Proof.
+  eapply iff_trans.
+  - apply iff_sym. apply adn_eq_aem.
+  - apply adn_eq_apierce.
+Qed.
