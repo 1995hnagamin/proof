@@ -80,20 +80,6 @@ Qed.
 
 (* ================================================= *)
 
-Proposition em2dn : forall P,
-    (excl_mid P) -> (dbl_neg P).
-Proof.
-  intros P EMP NNP. destruct EMP as [HP | NP].
-  - apply HP.
-  - exfalso. apply NNP. exact NP.
-Qed.
-
-Proposition dn2em : forall P,
-    (dbl_neg P) -> (excl_mid P).
-Proof.
-  intros P DN.
-Abort.
-
 Proposition adn_eq_aem :
     (forall P, dbl_neg P) <-> (forall P, excl_mid P).
 Proof.
@@ -103,20 +89,10 @@ Proof.
     left. apply ADN. intros NP. apply NEM.
     right. exact NP.
   - (* <- *)
-    intros AEM P. apply em2dn. apply AEM.
+    intros AEM P NNP. specialize AEM with P. destruct AEM.
+    + (* P *) assumption.
+    + (* ~P *) exfalso. apply NNP. assumption.
 Qed.
-
-Proposition dn_eq_pierce : forall P Q,
-    (dbl_neg P) <-> (pierce P Q).
-Proof.
-  split.
-  - (* -> *)
-    intros DN PQP. apply DN.
-    intros NP. apply NP. apply PQP.
-    intros HP. congruence.
-  - (* <- *)
-    intros PQPP NNP. apply PQPP.
-    intros PQ. Abort.
 
 Proposition adn_eq_apierce :
   (forall P, dbl_neg P) <-> (forall P Q, pierce P Q).
@@ -138,6 +114,56 @@ Proof.
   - apply iff_sym. apply adn_eq_aem.
   - apply adn_eq_apierce.
 Qed.
+
+Lemma de_morgan : forall P Q,
+    ~(P \/ Q) -> ~P /\ ~Q.
+Proof.
+  intros P Q H1. split.
+  - (* ~P *)
+    intros HP. apply H1. left. assumption.
+  - (* ~Q *)
+    intros HQ. apply H1. right. assumption.
+Qed.
+
+Proposition excl_mid_axiom_iff_red_absurd_axiom :
+  (forall P, excl_mid P) <-> (forall P, red_absurd P).
+Proof.
+  split.
+  - (* -> *)
+    intros AEM P NP2P. specialize (AEM P). destruct AEM.
+    + assumption.
+    + apply NP2P. assumption.
+  - (* <- *)
+    intros ARA P. apply ARA. intros NEM.
+    apply de_morgan in NEM. destruct NEM as [NP NNP].
+    right. exact NP.
+Qed.
+
+Proposition em2dn : forall P,
+    (excl_mid P) -> (dbl_neg P).
+Proof.
+  intros P EMP NNP. destruct EMP as [HP | NP].
+  - apply HP.
+  - exfalso. apply NNP. exact NP.
+Qed.
+
+Proposition dn2em : forall P,
+    (dbl_neg P) -> (excl_mid P).
+Proof.
+  intros P DN.
+Abort.
+
+Proposition dn_eq_pierce : forall P Q,
+    (dbl_neg P) <-> (pierce P Q).
+Proof.
+  split.
+  - (* -> *)
+    intros DN PQP. apply DN.
+    intros NP. apply NP. apply PQP.
+    intros HP. congruence.
+  - (* <- *)
+    intros PQPP NNP. apply PQPP.
+    intros PQ. Abort.
 
 Proposition adn_eq_aqpierce : forall P,
     (dbl_neg P) <-> (forall Q, pierce P Q).
@@ -175,26 +201,3 @@ Proposition red_absurd_imp_excl_mid : forall P,
     red_absurd P -> excl_mid P.
 Proof.
   intros P RA. Abort.
-
-Lemma de_morgan : forall P Q,
-    ~(P \/ Q) -> ~P /\ ~Q.
-Proof.
-  intros P Q H1. split.
-  - (* ~P *)
-    intros HP. apply H1. left. assumption.
-  - (* ~Q *)
-    intros HQ. apply H1. right. assumption.
-Qed.
-
-Proposition excl_mid_axiom_iff_red_absurd_axiom :
-  (forall P, excl_mid P) <-> (forall P, red_absurd P).
-Proof.
-  split.
-  - (* -> *)
-    intros AEM P.
-    apply excl_mid_imp_red_absurd. apply AEM.
-  - (* <- *)
-    intros ARA P. apply ARA. intros NEM.
-    apply de_morgan in NEM. destruct NEM as [NP NNP].
-    right. exact NP.
-Qed.
