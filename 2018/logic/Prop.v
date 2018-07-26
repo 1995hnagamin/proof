@@ -35,6 +35,16 @@ Proof.
   left. exact HP.
 Qed.
 
+Lemma de_morgan : forall P Q,
+    ~(P \/ Q) -> ~P /\ ~Q.
+Proof.
+  intros P Q H1. split.
+  - (* ~P *)
+    intros HP. apply H1. left. assumption.
+  - (* ~Q *)
+    intros HQ. apply H1. right. assumption.
+Qed.
+
 Proposition nnaem :
   ~~(forall P, excl_mid P).
 Proof.
@@ -129,3 +139,49 @@ Qed.
 (* Reductio ad absurdum *)
 Definition red_absurd (P:Prop) :=
   (~P -> P) -> P.
+
+Proposition red_absurd_not_false : forall P,
+    ~~(red_absurd P).
+Proof.
+  intros P NRA. apply NRA.
+  intros NP2P. apply NP2P. intros HP.
+  apply NRA. intros ?. exact HP.
+Qed.
+
+Proposition dbl_neg_iff_red_absurd : forall P,
+    dbl_neg P <-> red_absurd P.
+Proof.
+  split.
+  - (* -> *)
+    intros DN NP2P. apply DN. intros NP.
+    apply NP. apply NP2P. exact NP.
+  - (* <- *)
+    intros RA NNP. apply RA. intros NP.
+    exfalso. apply NNP. exact NP.
+Qed.
+
+Proposition excl_mid_imp_red_absurd : forall P,
+    excl_mid P -> red_absurd P.
+Proof.
+  intros P EM NP2P. destruct EM.
+  - (* P *) assumption.
+  - (* ~P *) apply NP2P. assumption.
+Qed.
+
+Proposition red_absurd_imp_excl_mid : forall P,
+    red_absurd P -> excl_mid P.
+Proof.
+  intros P RA. Abort.
+
+Proposition excl_mid_axiom_iff_red_absurd_axiom :
+  (forall P, excl_mid P) <-> (forall P, red_absurd P).
+Proof.
+  split.
+  - (* -> *)
+    intros AEM P.
+    apply excl_mid_imp_red_absurd. apply AEM.
+  - (* <- *)
+    intros ARA P. apply ARA. intros NEM.
+    apply de_morgan in NEM. destruct NEM as [NP NNP].
+    right. exact NP.
+Qed.
