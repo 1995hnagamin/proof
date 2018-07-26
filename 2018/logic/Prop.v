@@ -125,3 +125,7 @@ Proof.
     intros HPQ NNP. apply HPQ with False.
     intros NP. exfalso. apply NNP. exact NP.
 Qed.
+
+(* Reductio ad absurdum *)
+Definition red_absurd (P:Prop) :=
+  (~P -> P) -> P.
