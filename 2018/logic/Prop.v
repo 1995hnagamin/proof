@@ -113,3 +113,15 @@ Proof.
   - apply iff_sym. apply adn_eq_aem.
   - apply adn_eq_apierce.
 Qed.
+
+Proposition adn_eq_aqpierce : forall P,
+    (dbl_neg P) <-> (forall Q, pierce P Q).
+Proof.
+  split.
+  - (* -> *)
+    intros DN Q PQP. apply DN. intros NP. apply NP.
+    apply PQP. intros HP. congruence.
+  - (* <- *)
+    intros HPQ NNP. apply HPQ with False.
+    intros NP. exfalso. apply NNP. exact NP.
+Qed.
