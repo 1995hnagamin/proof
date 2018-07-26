@@ -1,5 +1,7 @@
 (** Prop.v *)
 
+(* Double Negative Elimination *)
+
 Definition dbl_neg (P:Prop) :=
   ~~P -> P.
 
@@ -24,6 +26,9 @@ Proof.
   intros P TN HP. apply TN. intros NP. apply NP. exact HP.
 Qed.
 
+
+(* Law of Excluded Middle *)
+
 Definition excl_mid (P:Prop) :=
   P \/ ~P.
 
@@ -35,16 +40,6 @@ Proof.
   left. exact HP.
 Qed.
 
-Lemma de_morgan : forall P Q,
-    ~(P \/ Q) -> ~P /\ ~Q.
-Proof.
-  intros P Q H1. split.
-  - (* ~P *)
-    intros HP. apply H1. left. assumption.
-  - (* ~Q *)
-    intros HQ. apply H1. right. assumption.
-Qed.
-
 Proposition nnaem :
   ~~(forall P, excl_mid P).
 Proof.
@@ -52,6 +47,38 @@ Proof.
   intros P. right. intros HP.
   apply NAEM. intros P'. 
 Abort.
+
+
+(* Pierce's Law *)
+
+Definition pierce (P Q:Prop) :=
+  ((P -> Q) -> P) -> P.
+
+Proposition nn_pierce : forall P Q : Prop,
+    ~~(pierce P Q).
+Proof.
+  intros P Q NPQPP. apply NPQPP.
+  intros PQP. apply PQP.
+  intros HP. exfalso.
+  apply NPQPP. intros ?. exact HP.
+Qed.
+
+
+(* Reductio ad absurdum *)
+
+Definition red_absurd (P:Prop) :=
+  (~P -> P) -> P.
+
+Proposition red_absurd_not_false : forall P,
+    ~~(red_absurd P).
+Proof.
+  intros P NRA. apply NRA.
+  intros NP2P. apply NP2P. intros HP.
+  apply NRA. intros ?. exact HP.
+Qed.
+
+
+(* ================================================= *)
 
 Proposition em2dn : forall P,
     (excl_mid P) -> (dbl_neg P).
@@ -77,18 +104,6 @@ Proof.
     right. exact NP.
   - (* <- *)
     intros AEM P. apply em2dn. apply AEM.
-Qed.
-
-Definition pierce (P Q:Prop) :=
-  ((P -> Q) -> P) -> P.
-
-Proposition nn_pierce : forall P Q : Prop,
-    ~~(pierce P Q).
-Proof.
-  intros P Q NPQPP. apply NPQPP.
-  intros PQP. apply PQP.
-  intros HP. exfalso.
-  apply NPQPP. intros ?. exact HP.
 Qed.
 
 Proposition dn_eq_pierce : forall P Q,
@@ -136,18 +151,6 @@ Proof.
     intros NP. exfalso. apply NNP. exact NP.
 Qed.
 
-(* Reductio ad absurdum *)
-Definition red_absurd (P:Prop) :=
-  (~P -> P) -> P.
-
-Proposition red_absurd_not_false : forall P,
-    ~~(red_absurd P).
-Proof.
-  intros P NRA. apply NRA.
-  intros NP2P. apply NP2P. intros HP.
-  apply NRA. intros ?. exact HP.
-Qed.
-
 Proposition dbl_neg_iff_red_absurd : forall P,
     dbl_neg P <-> red_absurd P.
 Proof.
@@ -172,6 +175,16 @@ Proposition red_absurd_imp_excl_mid : forall P,
     red_absurd P -> excl_mid P.
 Proof.
   intros P RA. Abort.
+
+Lemma de_morgan : forall P Q,
+    ~(P \/ Q) -> ~P /\ ~Q.
+Proof.
+  intros P Q H1. split.
+  - (* ~P *)
+    intros HP. apply H1. left. assumption.
+  - (* ~Q *)
+    intros HQ. apply H1. right. assumption.
+Qed.
 
 Proposition excl_mid_axiom_iff_red_absurd_axiom :
   (forall P, excl_mid P) <-> (forall P, red_absurd P).
